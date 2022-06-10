@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k8s-app-configmap
+data:
+  database-url: https://k8s.database.com

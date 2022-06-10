@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-app-deployment
+spec:
+  selector:
+    matchLabels:
+      app: k8s-app
+  template:
+    metadata:
+      labels:
+        app: k8s-app
+    spec:
+      containers:
+      - name: k8s-app
+        image: kvncont/k8s-app:0.1.0
+        env:
+        - name: DB_URL
+          valueFrom:
+            configMapKeyRef:
+              name: k8s-app-configmap
+              key: database-url
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: k8s-app-secret
+              key: database-user
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: k8s-app-secret
+              key: database-pass
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 200m
+          limits:
+            memory: 128Mi
+            cpu: 500m
+        ports:
+        - containerPort: 8080
