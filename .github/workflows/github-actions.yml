@@ -11,13 +11,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Set Env Vars
+      run: echo "BUILD_NUMBER=$(date +%Y%m%d)-${{ github.run_number }}" >> ${GITHUB_ENV}
+
     - name: Docker Build
-      run: docker build . --file Dockerfile --tag kvncont/k8s-app:${{ github.run_id }}
+      run: docker build . --file Dockerfile --tag kvncont/k8s-app:${{ env.BUILD_NUMBER }}
     
     - name: Anchore Scan
       uses: anchore/scan-action@v3
       with:
-        image: kvncont/k8s-app:${{ github.run_id }}
+        image: kvncont/k8s-app:${{ env.BUILD_NUMBER }}
         acs-report-enable: true
         fail-build: false
     
