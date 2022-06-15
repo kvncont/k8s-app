@@ -6,8 +6,8 @@ on:
     branches: [ "main" ]
 env:
   TZ: UTC-6
-  REGISTRY: docker.io/${{ secrets.DOCKER_USERNAME }}
-  IMAGE_NAME: k8s-app
+  REGISTRY: docker.io
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/k8s-app
 jobs:
   Build:
     runs-on: ubuntu-latest
