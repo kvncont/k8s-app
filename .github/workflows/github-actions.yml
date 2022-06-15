@@ -8,7 +8,6 @@ env:
   TZ: UTC-6
   REGISTRY: docker.io
   IMAGE_NAME: ${{ github.repository }}
-  DOCKER_IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 jobs:
   Build:
     runs-on: ubuntu-latest
@@ -22,12 +21,12 @@ jobs:
         echo $(date)
 
     - name: Docker Build
-      run: docker build . -t ${{ env.DOCKER_IMAGE }}:latest -t ${{ env.DOCKER_IMAGE }}:${{ env.BUILD_NUMBER }}
+      run: docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_NUMBER }}
     
     - name: Anchore Scan
       uses: anchore/scan-action@v3
       with:
-        image: ${{ env.DOCKER_IMAGE }}:${{ env.BUILD_NUMBER }}
+        image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_NUMBER }}
         acs-report-enable: true
         fail-build: false
     
@@ -44,4 +43,4 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
     
     - name: Docker Push
-      run: docker push ${{ env.DOCKER_IMAGE }} --all-tags
+      run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} --all-tags
