@@ -15,9 +15,10 @@ jobs:
       run: |
         export TZ=UTC-6
         echo "BUILD_NUMBER=$(date +%Y%m%d)-${{ github.run_number }}" >> ${GITHUB_ENV}
+        echo $(date)
 
     - name: Docker Build
-      run: docker build . --file Dockerfile --tag kvncont/k8s-app:${{ env.BUILD_NUMBER }}
+      run: docker build . -t kvncont/k8s-app:latest -t kvncont/k8s-app:${{ env.BUILD_NUMBER }}
     
     - name: Anchore Scan
       uses: anchore/scan-action@v3
