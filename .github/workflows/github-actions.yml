@@ -6,8 +6,8 @@ on:
     branches: [ "main" ]
 env:
   TZ: UTC-6
-  REGISTRY: docker.io
-  IMAGE_NAME: ${{ github.repository }}
+  REGISTRY: docker.io/${{ secrets.DOCKER_USERNAME }}
+  IMAGE_NAME: k8s-app
 jobs:
   Build:
     runs-on: ubuntu-latest
@@ -19,9 +19,15 @@ jobs:
       run: |
         echo "BUILD_NUMBER=$(date +%Y%m%d)-${{ github.run_number }}" >> ${GITHUB_ENV}
         echo $(date)
+    
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
     - name: Docker Build
-      run: docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_NUMBER }}
+      run: docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_NUMBER }} --label ${{ steps.meta.outputs.labels }}
     
     - name: Anchore Scan
       uses: anchore/scan-action@v3
