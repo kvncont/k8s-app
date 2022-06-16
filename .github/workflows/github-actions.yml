@@ -25,15 +25,18 @@ jobs:
     - name: Docker Build
       run: docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_NUMBER }}
     
+    # - name: SonarQube Scan
+    #   uses: sonarsource/sonarcloud-github-action@master
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #   with:
+    #     args:
+    #       -Dsonar.projectKey=com.github.kvncont:k8s-app
+    #       -Dsonar.organization=${{ github.repository_owner }}
+    
     - name: SonarQube Scan
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args:
-          -Dsonar.projectKey=com.github.kvncont:k8s-app
-          -Dsonar.organization=${{ github.repository_owner }}
+      run: ./mvnw org.sonarsource.scanner.maven:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=kvncont -Dsonar.login=${{ secrets.SONAR_TOKEN }}
     
     - name: SonarQube Quality Gate
       uses: sonarsource/sonarqube-quality-gate-action@master
