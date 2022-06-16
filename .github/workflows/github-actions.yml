@@ -29,23 +29,17 @@ jobs:
         -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
         -Dsonar.qualitygate.wait=true
 
-    - name: SonarQube Quality Gate
-      uses: sonarsource/sonarqube-quality-gate-action@master
-      timeout-minutes: 5
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        
     - name: Docker Build
       run: docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_NUMBER }}
     
-    - name: Anchore Scan
+    - name: Anchore Grype Scan
       uses: anchore/scan-action@v3
       with:
         image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_NUMBER }}
         acs-report-enable: true
         fail-build: false
     
-    - name: Publish Anchore Scan Report
+    - name: Publish Anchore Grype Scan Report
       uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: results.sarif
