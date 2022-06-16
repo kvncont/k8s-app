@@ -4,6 +4,8 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+permissions:
+  pull-requests: read
 env:
   TZ: UTC-6
   REGISTRY: docker.io
@@ -23,6 +25,16 @@ jobs:
     - name: Docker Build
       run: docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_NUMBER }}
     
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args:
+          -Dsonar.projectKey=com.github.kvncont:k8s-app
+          -Dsonar.organization=${{ github.repository_owner }}
+
     - name: Anchore Scan
       uses: anchore/scan-action@v3
       with:
