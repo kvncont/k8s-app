@@ -4,8 +4,8 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-permissions:
-  pull-requests: read
+# permissions:
+#   pull-requests: read
 env:
   TZ: UTC-6
   REGISTRY: docker.io
