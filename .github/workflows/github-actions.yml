@@ -25,7 +25,7 @@ jobs:
     - name: Docker Build
       run: docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_NUMBER }}
     
-    - name: SonarCloud Scan
+    - name: SonarQube Scan
       uses: sonarsource/sonarcloud-github-action@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -34,6 +34,12 @@ jobs:
         args:
           -Dsonar.projectKey=com.github.kvncont:k8s-app
           -Dsonar.organization=${{ github.repository_owner }}
+    
+    - name: SonarQube Quality Gate
+      uses: sonarsource/sonarqube-quality-gate-action@master
+      timeout-minutes: 5
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Anchore Scan
       uses: anchore/scan-action@v3
