@@ -11,7 +11,10 @@ EXPOSE 8080
 RUN addgroup -S k8s && adduser -S k8s -G k8s
 USER k8s
 COPY --from=build ${EXTRACTED}/dependencies/ ./
+RUN true
 COPY --from=build ${EXTRACTED}/spring-boot-loader/ ./
+RUN true
 COPY --from=build ${EXTRACTED}/snapshot-dependencies/ ./
+RUN true
 COPY --from=build ${EXTRACTED}/application/ ./
 ENTRYPOINT ["java","org.springframework.boot.loader.JarLauncher"]
