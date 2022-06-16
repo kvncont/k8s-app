@@ -35,15 +35,6 @@ jobs:
     #       -Dsonar.projectKey=com.github.kvncont:k8s-app
     #       -Dsonar.organization=${{ github.repository_owner }}
     
-    - name: SonarQube Scan
-      run: ./mvnw org.sonarsource.scanner.maven:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=kvncont -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-    
-    - name: SonarQube Quality Gate
-      uses: sonarsource/sonarqube-quality-gate-action@master
-      timeout-minutes: 5
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
     - name: Anchore Scan
       uses: anchore/scan-action@v3
       with:
@@ -52,9 +43,20 @@ jobs:
         fail-build: false
     
     - name: Publish Anchore Scan Report
+      if: ${{ success() || failure() }}
       uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: results.sarif
+
+    - name: SonarQube Scan
+      if: ${{ success() || failure() }}
+      run: ./mvnw org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=kvncont -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+    
+    - name: SonarQube Quality Gate
+      uses: sonarsource/sonarqube-quality-gate-action@master
+      timeout-minutes: 5
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     
     - name: Docker Login
       uses: docker/login-action@v2
