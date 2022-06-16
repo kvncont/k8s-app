@@ -1,24 +1,17 @@
-FROM mcr.microsoft.com/openjdk/jdk:11-ubuntu AS build
-
+FROM eclipse-temurin:11-jre-alpine as build
 WORKDIR /workspace/app
+COPY target/*.jar target/
+RUN mkdir target/extracted
+RUN java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted
 
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-COPY src src
-
-RUN ./mvnw package
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
-
-
-FROM mcr.microsoft.com/openjdk/jdk:11-ubuntu
-
+FROM eclipse-temurin:11-jre-alpine
+ARG EXTRACTED=/workspace/app/target/extracted
 VOLUME /tmp
-
-ARG DEPENDENCY=/workspace/app/target/dependency
-
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-
-ENTRYPOINT ["java","-cp","app:app/lib/*","com.github.kvncont.k8s.app.Application"]
+EXPOSE 8080
+RUN addgroup -S k8s && adduser -S k8s -G k8s
+USER k8s
+COPY --from=build ${EXTRACTED}/dependencies/ ./
+COPY --from=build ${EXTRACTED}/spring-boot-loader/ ./
+COPY --from=build ${EXTRACTED}/snapshot-dependencies/ ./
+COPY --from=build ${EXTRACTED}/application/ ./
+ENTRYPOINT ["java","org.springframework.boot.loader.JarLauncher"]
