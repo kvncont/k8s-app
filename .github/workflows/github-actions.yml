@@ -7,6 +7,9 @@ on:
   pull_request:
     branches: 
     - main
+    paths-ignore:
+    - '**/README.md'
+    - '**/.gitignore'
 env:
   TZ: UTC-6
   REGISTRY: docker.io
