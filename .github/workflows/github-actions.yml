@@ -1,9 +1,14 @@
 name: k8s-app
 on:
   push:
-    branches: [ "main" ]
+    branches:
+    - '*'
+    paths-ignore:
+    - '**/README.md'
+    - '**/.gitignore'
   pull_request:
-    branches: [ "main" ]
+    branches: 
+    - main
 env:
   TZ: UTC-6
   REGISTRY: docker.io
