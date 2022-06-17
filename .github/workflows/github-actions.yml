@@ -1,8 +1,6 @@
 name: k8s-app
 on:
   push:
-    branches:
-    - '*'
     paths-ignore:
     - '**/README.md'
     - '**/.gitignore'
