@@ -35,10 +35,14 @@ jobs:
         -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
         -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_NUMBER }} \
         --label org.opencontainers.image.title=k8s-app \
-        --label org.opencontainers.image.url=${{ github.repositoryUrl }} \
-        --label org.opencontainers.image.source=${{ github.repositoryUrl }} \
-        --label org.opencontainers.image.created=$(date) \
-        --label org.opencontainers.image.revision=${{ github.sha }} 
+        --label org.opencontainers.image.authors=${{ github.repository_owner }} \
+        --label org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }} \
+        --label org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }} \
+        --label org.opencontainers.image.created=$(date +%Y-%m-%dT%T.%3NZ) \
+        --label org.opencontainers.image.revision=${{ github.sha }} \
+        --label org.opencontainers.image.base.name=eclipse-temurin:11-jre-alpine \
+        --label com.github.image.run.id=${{ github.run_id }} \
+        --label com.github.image.run.number=${{ github.run_number }}
     
     - name: Anchore Grype Scan
       uses: anchore/scan-action@v3
