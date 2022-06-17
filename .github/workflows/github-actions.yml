@@ -30,7 +30,15 @@ jobs:
         -Dsonar.qualitygate.wait=true
 
     - name: Docker Build
-      run: docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_NUMBER }}
+      run: |
+        docker build . \
+        -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
+        -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_NUMBER }} \
+        --label org.opencontainers.image.title=k8s-app \
+        --label org.opencontainers.image.url=${{ github.repositoryUrl }} \
+        --label org.opencontainers.image.source=${{ github.repositoryUrl }} \
+        --label org.opencontainers.image.created=$(date) \
+        --label org.opencontainers.image.revision=${{ github.sha }} 
     
     - name: Anchore Grype Scan
       uses: anchore/scan-action@v3
@@ -50,12 +58,6 @@ jobs:
         registry: ${{ env.REGISTRY }}
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-
-    # - name: Extract metadata (tags, labels) for Docker
-    #   id: meta
-    #   uses: docker/metadata-action@v3
-    #   with:
-    #     images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
     
     - name: Docker Push
       run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} --all-tags
