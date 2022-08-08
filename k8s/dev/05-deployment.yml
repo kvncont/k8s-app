@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-app-deployment
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: k8s-app
+  template:
+    metadata:
+      labels:
+        app: k8s-app
+    spec:
+      containers:
+      - name: k8s-app
+        image: kvncont/k8s-app:20220808-37
+        volumeMounts:
+        - name: secrets-store01-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+        env:
+        - name: DB_URL
+          valueFrom:
+            configMapKeyRef:
+              name: k8s-app-configmap
+              key: database-url
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: k8s-app-secret
+              key: database-user
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: k8s-app-secret
+              key: database-pass
+        readinessProbe:
+          httpGet:
+            port: 8080
+            path: /actuator/health
+          # exec:
+          #   command:
+          #     - curl
+          #     - -X POST
+          #     - http://localhost:8080/
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            port: 8080
+            path: /actuator/health
+          # exec:
+          #   command:
+          #     - curl
+          #     - -X POST
+          #     - http://localhost:8080/
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 200m
+          limits:
+            memory: 512Mi
+            cpu: 500m
+        ports:
+        - containerPort: 8080
+      volumes:
+      - name: secrets-store01-inline
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: "k8s-app-azure-kv-kvncontmicroservices-system-msi"
