@@ -1,0 +1,10 @@
+name: SonarCloud Scan
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  sonarcloud:
+    uses: kvncont/k8s-app/.github/resusable-workflows/reusable-sonarcloud-scan.yaml@main
