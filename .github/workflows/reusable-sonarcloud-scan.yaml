@@ -1,6 +1,11 @@
 name: SonarCloud Scan
 on:
   workflow_call:
+    secrets:
+      github-token:
+        required: true
+      sonar-token:
+        required: true
 
 jobs:
   sonarcloud:
@@ -13,14 +18,14 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.1.1
+        uses: SonarSource/sonarcloud-github-action@main
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.github-token }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.sonar-token }}
       
       - name: SonarQube Quality Gate Check
         id: sonarqube-quality-gate-check
-        uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
+        uses: sonarsource/sonarqube-quality-gate-action@main
         # Force to fail step after specific time.
         timeout-minutes: 5
         env:
