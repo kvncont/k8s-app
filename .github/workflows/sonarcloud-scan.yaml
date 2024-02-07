@@ -7,4 +7,4 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   sonarcloud:
-    uses: kvncont/k8s-app/.github/resusable-workflows/reusable-sonarcloud-scan.yaml@main
+    uses: kvncont/k8s-app/.github/workflows/reusable-sonarcloud-scan.yaml@main
