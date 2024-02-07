@@ -8,6 +8,6 @@ on:
 jobs:
   sonarcloud:
     uses: kvncont/k8s-app/.github/workflows/reusable-sonarcloud-scan.yaml@main
-    with:
+    secrets:
       github-token: ${{ secrets.GITHUB_TOKEN }}
       sonar-token: ${{ secrets.SONAR_TOKEN }}
