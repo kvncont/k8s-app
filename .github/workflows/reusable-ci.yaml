@@ -51,7 +51,7 @@ jobs:
           distribution: temurin
           java-version: ${{ inputs.sonar-java-version }}
      
-      - name: Maven Package
+      - name: SonarCloud Scan
         env:
           GITHUB_TOKEN: ${{ secrets.github-token }}
           SONAR_TOKEN: ${{ secrets.sonar-token }}
