@@ -45,7 +45,7 @@ jobs:
         run: |
           mvn clean package --update-snapshots --file ${{ inputs.pom-file }}
 
-      - name: Setup JDK ${{ inputs.java-version }} (Maven)
+      - name: Setup JDK ${{ inputs.java-version }} (Sonar)
         uses: actions/setup-java@v4
         with:
           distribution: temurin
