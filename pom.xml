@@ -14,6 +14,12 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.organization>kvncont</sonar.organization>
+		<sonar.projectKey>${sonar.organization}_${project.artifactId}</sonar.projectKey>
+		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		<sonar.qualitygate.wait>true</sonar.qualitygate.wait>
+		<sonar.qualitegate.timeout>300</sonar.qualitegate.timeout>
 	</properties>
 	<dependencies>
 		<dependency>
