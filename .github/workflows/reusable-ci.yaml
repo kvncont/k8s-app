@@ -5,23 +5,6 @@ on:
       java-version:
         type: string
         default: 21
-      # sonar-url:
-      #   type: string
-      #   default: https://sonarcloud.io
-      # sonar-org:
-      #   type: string
-      #   default: kvncont
-      # sonar-project-key:
-      #   type: string
-      #   required: true
-      # sonar-quality-gate:
-      #   type: string
-      #   default: 300
-    # secrets:
-    #   github-token:
-    #     required: true
-    #   sonar-token:
-    #     required: true
 
 jobs:
   build:
@@ -33,26 +16,6 @@ jobs:
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
-      # - name: Cache SonarCloud
-      #   uses: actions/cache@v1
-      #   with:
-      #     path: ~/.sonar/cache
-      #     key: ${{ runner.os }}-sonar
-      #     restore-keys: ${{ runner.os }}-sonar
-
-      # - name: Cache Maven
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/.m2
-      #     key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-      #     restore-keys: ${{ runner.os }}-m2
-
-      # - name: SonarCloud Scan
-      #   uses: SonarSource/sonarcloud-github-action@master
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.github-token }} # Needed to get PR information, if any
-      #     SONAR_TOKEN: ${{ secrets.sonar-token }}
-
       - name: Setup JDK ${{ inputs.java-version }} (Maven)
         uses: actions/setup-java@v4
         with:
@@ -63,32 +26,3 @@ jobs:
       - name: Maven Package
         run: |
           mvn clean package --update-snapshots
-
-      # - name: Setup JDK ${{ inputs.java-version }} (Sonar)
-      #   uses: actions/setup-java@v1
-      #   with:
-      #     java-version: ${{ inputs.sonar-java-version }}
-
-      # - name: SonarCloud Scan
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      #   run: |
-      #     mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-      #     -Dsonar.token=$SONAR_TOKEN \
-      #     -Dsonar.organization=${{ inputs.sonar-org}} \
-      #     -Dsonar.host.url=${{ inputs.sonar-url}} \
-      #     -Dsonar.projectKey=${{ inputs.sonar-project-key }} \
-      #     -Dsonar.qualitygate.wait=true \
-      #     -Dsonar.qualitygate.timeout=${{ inputs.sonar-quality-gate }}
-
-      # - name: SonarQube Quality Gate Check
-      #   id: sonarqube-quality-gate-check
-      #   uses: sonarsource/sonarqube-quality-gate-action@master
-      #   # Force to fail step after specific time.
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.sonar-token }}
-
-      # - name: "SonarQube Quality Gate Status"
-      #   run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
