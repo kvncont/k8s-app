@@ -1,4 +1,4 @@
-name: SonarCloud Scan
+name: K8s App CI
 on:
   push:
     branches:
@@ -6,8 +6,12 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  sonarcloud:
+  ci:
+    name: CI
     uses: kvncont/k8s-app/.github/workflows/reusable-sonarcloud-scan.yaml@main
+    with:
+      mvn-java-version: 11
+      sonar-project-key: kvncont_k8s-app
     secrets:
       github-token: ${{ secrets.GITHUB_TOKEN }}
       sonar-token: ${{ secrets.SONAR_TOKEN }}
