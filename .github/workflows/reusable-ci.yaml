@@ -2,7 +2,10 @@ name: CI
 on:
   workflow_call:
     inputs:
-      java-version:
+      mvn-java-version:
+        type: string
+        default: 21
+      sonar-java-version:
         type: string
         default: 21
       sonar-url:
@@ -32,22 +35,42 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      
+      - name: Cache SonarCloud
+        uses: actions/cache@v1
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
       - name: Setup JDK ${{ inputs.java-version }} (Maven)
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: ${{ inputs.java-version }}
+          java-version: ${{ inputs.mvn-java-version }}
           cache: maven
 
       - name: Maven Package
         run: |
-          mvn clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar --update-snapshots \
-          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco-aggregate/jacoco.xml \
-          -Dsonar.token=$SONAR_TOKEN \
-          -Dsonar.organization=${{ inputs.sonar-org}} \
-          -Dsonar.host.url=${{ inputs.sonar-url}} \
-          -Dsonar.projectKey=${{ inputs.sonar-project-key }}
+          mvn clean package --update-snapshots
+
+      - name: Setup JDK ${{ inputs.java-version }} (Maven)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.sonar-java-version }}
+          cache: maven
+     
+      - name: Maven Package
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco-aggregate/jacoco.xml \
+          -Dsonar.token=$SONAR_TOKEN \
+          -Dsonar.host.url=${{ inputs.sonar-url}} \
+          -Dsonar.organization=${{ inputs.sonar-org}} \
+          -Dsonar.projectKey=${{ inputs.sonar-project-key }} \
+          -Dsonar.qualitygate.wait=true \
+          -Dsonar.qualitygate.timeout=${{ inputs.sonar-quality-gate }}
