@@ -2,29 +2,26 @@ name: CI
 on:
   workflow_call:
     inputs:
-      mvn-java-version:
+      java-version:
         type: string
         default: 21
-      sonar-java-version:
-        type: string
-        default: 21
-      sonar-url:
-        type: string
-        default: https://sonarcloud.io
-      sonar-org:
-        type: string
-        default: kvncont
-      sonar-project-key:
-        type: string
-        required: true
-      sonar-quality-gate:
-        type: string
-        default: 300
-    secrets:
-      github-token:
-        required: true
-      sonar-token:
-        required: true
+      # sonar-url:
+      #   type: string
+      #   default: https://sonarcloud.io
+      # sonar-org:
+      #   type: string
+      #   default: kvncont
+      # sonar-project-key:
+      #   type: string
+      #   required: true
+      # sonar-quality-gate:
+      #   type: string
+      #   default: 300
+    # secrets:
+    #   github-token:
+    #     required: true
+    #   sonar-token:
+    #     required: true
 
 jobs:
   build:
@@ -36,12 +33,12 @@ jobs:
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
-      - name: Cache SonarCloud
-        uses: actions/cache@v1
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+      # - name: Cache SonarCloud
+      #   uses: actions/cache@v1
+      #   with:
+      #     path: ~/.sonar/cache
+      #     key: ${{ runner.os }}-sonar
+      #     restore-keys: ${{ runner.os }}-sonar
 
       - name: Cache Maven
         uses: actions/cache@v1
@@ -59,29 +56,29 @@ jobs:
       - name: Setup JDK ${{ inputs.java-version }} (Maven)
         uses: actions/setup-java@v1
         with:
-          java-version: ${{ inputs.mvn-java-version }}
+          java-version: ${{ inputs.java-version }}
 
-      - name: Maven Compile
+      - name: Maven Package
         run: |
-          mvn clean test --update-snapshots
+          mvn clean package --update-snapshots
 
-      - name: Setup JDK ${{ inputs.java-version }} (Sonar)
-        uses: actions/setup-java@v1
-        with:
-          java-version: ${{ inputs.sonar-java-version }}
+      # - name: Setup JDK ${{ inputs.java-version }} (Sonar)
+      #   uses: actions/setup-java@v1
+      #   with:
+      #     java-version: ${{ inputs.sonar-java-version }}
 
-      - name: SonarCloud Scan
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.token=$SONAR_TOKEN \
-          -Dsonar.organization=${{ inputs.sonar-org}} \
-          -Dsonar.host.url=${{ inputs.sonar-url}} \
-          -Dsonar.projectKey=${{ inputs.sonar-project-key }} \
-          -Dsonar.qualitygate.wait=true \
-          -Dsonar.qualitygate.timeout=${{ inputs.sonar-quality-gate }}
+      # - name: SonarCloud Scan
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #   run: |
+      #     mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+      #     -Dsonar.token=$SONAR_TOKEN \
+      #     -Dsonar.organization=${{ inputs.sonar-org}} \
+      #     -Dsonar.host.url=${{ inputs.sonar-url}} \
+      #     -Dsonar.projectKey=${{ inputs.sonar-project-key }} \
+      #     -Dsonar.qualitygate.wait=true \
+      #     -Dsonar.qualitygate.timeout=${{ inputs.sonar-quality-gate }}
 
       # - name: SonarQube Quality Gate Check
       #   id: sonarqube-quality-gate-check

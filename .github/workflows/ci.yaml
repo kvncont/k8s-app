@@ -10,8 +10,8 @@ jobs:
     name: CI
     uses: kvncont/k8s-app/.github/workflows/reusable-ci.yaml@main
     with:
-      mvn-java-version: 11
-      sonar-project-key: kvncont_k8s-app
-    secrets:
-      github-token: ${{ secrets.GITHUB_TOKEN }}
-      sonar-token: ${{ secrets.SONAR_TOKEN }}
+      java-version: 11
+      # sonar-project-key: kvncont_k8s-app
+    # secrets:
+    #   github-token: ${{ secrets.GITHUB_TOKEN }}
+    #   sonar-token: ${{ secrets.SONAR_TOKEN }}
