@@ -5,6 +5,23 @@ on:
       java-version:
         type: string
         default: 21
+      sonar-url:
+        type: string
+        default: https://sonarcloud.io
+      sonar-org:
+        type: string
+        default: kvncont
+      sonar-project-key:
+        type: string
+        required: true
+      sonar-quality-gate:
+        type: string
+        default: 300
+    secrets:
+      github-token:
+        required: true
+      sonar-token:
+        required: true
 
 jobs:
   build:
@@ -25,4 +42,12 @@ jobs:
 
       - name: Maven Package
         run: |
-          mvn clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar --update-snapshots -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco-aggregate/jacoco.xml
+          mvn clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar --update-snapshots \
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco-aggregate/jacoco.xml \
+          -Dsonar.token=$SONAR_TOKEN \
+          -Dsonar.organization=${{ inputs.sonar-org}} \
+          -Dsonar.host.url=${{ inputs.sonar-url}} \
+          -Dsonar.projectKey=${{ inputs.sonar-project-key }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
