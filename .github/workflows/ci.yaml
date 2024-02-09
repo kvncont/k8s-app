@@ -12,3 +12,6 @@ jobs:
     with:
       java-version: 11
       sonar-project-key: kvncont_k8s-app
+    secrets:
+      github-token: ${{ secret.GITHUB_TOKEN }}
+      sonar-token: ${{ secret.SONAR_TOKEN }}
