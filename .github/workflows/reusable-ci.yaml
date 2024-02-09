@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       
       - name: Cache SonarCloud
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
@@ -50,7 +50,6 @@ jobs:
         with:
           distribution: temurin
           java-version: ${{ inputs.sonar-java-version }}
-          cache: maven
      
       - name: Maven Package
         env:
