@@ -12,8 +12,6 @@ on:
         type: string
         default: ./pom.xml
     secrets:
-      github-token:
-        required: true
       sonar-token:
         required: true
 
