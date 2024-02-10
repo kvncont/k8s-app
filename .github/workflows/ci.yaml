@@ -12,5 +12,4 @@ jobs:
     with:
       mvn-java-version: 11
     secrets:
-      github-token: ${{ secrets.GITHUB_TOKEN }}
       sonar-token: ${{ secrets.SONAR_TOKEN }}
