@@ -1,5 +1,8 @@
 name: CI Maven
 on:
+  push:
+    branches:    
+      - test
   workflow_call:
     inputs:
       mvn-java-version:
